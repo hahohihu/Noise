@@ -23,6 +23,21 @@ async function getAccessToken(authCode) {
     return token_json.access_token;
 }
 
+class SpotifyAPI {
+    constructor(access_token) {
+        this.access_token = access_token;
+    }
+
+    get(path) {
+        return fetch('https://api.spotify.com/v1' + path, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.access_token
+            }
+        })
+    }
+}
+
 /* GET display page. */
 router.get('/', async function (req, res, next) {
     if (req.app.locals.randomState != req.query.state) {
@@ -31,15 +46,10 @@ router.get('/', async function (req, res, next) {
     }
 
     let access_token = await getAccessToken(req.query.code);
+    let spotify = new SpotifyAPI(access_token);
 
-    let me = await fetch('https://api.spotify.com/v1/me', {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + access_token
-        }
-    });
+    let me = await spotify.get('/me');
     me = await me.json();
-    console.log(me);
     res.send("Hello, " + me.display_name + '!');
 });
 
