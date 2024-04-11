@@ -1,12 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET display page. */
-router.get('/', async function (req, res, next) {
-    if (req.app.locals.randomState != req.query.state) {
-        res.send('Error: Insecure connection');
-        return;
-    }
+async function getAccessToken(authCode) {
     let token = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
@@ -18,14 +13,25 @@ router.get('/', async function (req, res, next) {
                                 ).toString('base64'))
         },
         body: new URLSearchParams({
-            code: req.query.code,
+            code: authCode,
             redirect_uri: 'http://localhost:3000/display',
             grant_type: 'authorization_code'
         })
     });
 
     let token_json = await token.json();
-    let access_token = token_json.access_token;
+    return token_json.access_token;
+}
+
+/* GET display page. */
+router.get('/', async function (req, res, next) {
+    if (req.app.locals.randomState != req.query.state) {
+        res.send('Error: Insecure connection');
+        return;
+    }
+
+    let access_token = await getAccessToken(req.query.code);
+
     let me = await fetch('https://api.spotify.com/v1/me', {
         method: 'GET',
         headers: {
