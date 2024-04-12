@@ -32,7 +32,7 @@ router.get('/', async function (req, res, next) {
     }
 
     let access_token = await getAccessToken(req.query.code);
-    res.cookie('access_token', access_token);
+    res.cookie('access_token', access_token, { maxAge: 3500000 });
     res.redirect('/display');
 });
 
