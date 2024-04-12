@@ -17,12 +17,8 @@ var express = require('express');
 var router = express.Router();
 
 /* GET display page. */
-router.get('/', async function (req, res, next) {
-    let spotify = new SpotifyAPI(req.app.locals.access_token);
-
-    let me = await spotify.get('/me');
-    me = await me.json();
-    res.send("Hello, " + me.display_name + '!');
+router.get('/', function (req, res, next) {
+    res.render('display', { title: 'Your Noise' });
 });
 
 module.exports = router;

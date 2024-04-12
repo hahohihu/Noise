@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 /* GET Spotify login */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   res.redirect('https://accounts.spotify.com/authorize?' +
     new URLSearchParams({
       response_type: 'code',
