@@ -56,12 +56,6 @@ if (!token) {
 let spotify = new SpotifyAPI(token);
 
 (async () => {
-	let me = await spotify.get('/me');
-	console.log(me);
-	document.getElementById('filler').innerText = "Hello, " + me.display_name + "!";
-})();
-
-(async () => {
 	let tracks = await spotify.getSavedTracksCached();
 	console.log(tracks);
 
@@ -76,27 +70,31 @@ let spotify = new SpotifyAPI(token);
 	let durations = data.map(t => t.duration);
 	let popularities = data.map(t => t.popularity);
 
-	var width = 600, height = 400;
+	var width = window.innerWidth, height = window.innerHeight;
 	var colorScale = ['orange', 'lightblue', '#B19CD9'];
 
 	let durScale = d3.scaleLinear()
 		.domain([Math.min(...durations), Math.max(...durations)])
-		.range([0, width])
+		.range([0, width - 100])
 
 	let popScale = d3.scaleLinear()
 		.domain([Math.min(...popularities), Math.max(...popularities)])
-		.range([0, height]);
+		.range([0, height - 100]);
 
 	let songinfo = d3.select('body')
 		.append('div')
 		.attr('class', 'songinfo')
 		.style('opacity', 0);
 
+	d3.select('svg')
+		.attr('width', width)
+		.attr('height', height);
+
 	d3.select('svg g')
 		.selectAll('circle')
 		.data(data)
 		.join('circle')
-		.attr('r', 3)
+		.attr('r', 5)
 		.attr('cx', d => durScale(d.duration))
 		.attr('cy', d => popScale(d.popularity))
 		.on('mouseover', function(e, d) {
