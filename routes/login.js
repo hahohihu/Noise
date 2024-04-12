@@ -7,7 +7,7 @@ router.get('/', function (req, res, next) {
     new URLSearchParams({
       response_type: 'code',
       client_id: process.env.SPOTIFY_CLIENT_ID,
-      scope: 'user-read-private user-read-email',
+      scope: 'user-read-private user-read-email user-library-read',
       redirect_uri: 'http://localhost:3000/access',
       state: req.app.locals.randomState
     })

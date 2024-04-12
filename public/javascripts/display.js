@@ -9,14 +9,43 @@ class SpotifyAPI {
 		this.access_token = access_token;
 	}
 
-	async get(path) {
-		let res = await fetch('https://api.spotify.com/v1' + path, {
-			method: 'GET',
+	async request(path, method='GET') {
+		let res = await fetch(path, {
+			method: method,
 			headers: {
 				'Authorization': 'Bearer ' + this.access_token
 			}
 		});
 		return await res.json();
+	}
+
+	get(path) {
+		return this.request('https://api.spotify.com/v1' + path);	
+	}
+
+	async getSavedTracks() {
+		let tracks = [];
+		let next = 'https://api.spotify.com/v1/me/tracks?limit=50';
+		do {
+			let new_tracks = await this.request(next);
+			tracks.push(...new_tracks.items);
+			next = new_tracks.next;
+		} while (next);
+		return tracks;
+	}
+
+	async getSavedTracksCached() {
+		let tracks;
+		try {
+			tracks = JSON.parse(localStorage.getItem('tracks'));
+			if (tracks && Array.isArray(tracks)) {
+				return tracks;
+			}
+		} catch (e) {}
+	
+		tracks = await spotify.getSavedTracks();
+		localStorage.setItem('tracks', JSON.stringify(tracks));
+		return tracks;
 	}
 }
 
@@ -25,9 +54,16 @@ if (!token) {
 	window.location.replace("/");
 }
 let spotify = new SpotifyAPI(token);
-spotify.get('/me').then(res => {
-	document.getElementById('filler').innerText = "Hello, " + res.display_name + "!";
-});
+
+(async () => {
+	let me = await spotify.get('/me');
+	document.getElementById('filler').innerText = "Hello, " + me.display_name + "!";
+})();
+
+(async () => {
+	let tracks = await spotify.getSavedTracksCached();
+	console.log(tracks);
+})();
 
 var width = 600, height = 400;
 
