@@ -31,7 +31,8 @@ router.get('/', async function (req, res, next) {
         return;
     }
 
-    req.app.locals.access_token = await getAccessToken(req.query.code);
+    let access_token = await getAccessToken(req.query.code);
+    res.cookie('access_token', access_token);
     res.redirect('/display');
 });
 

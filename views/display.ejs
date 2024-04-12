@@ -3,9 +3,13 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script type="module" src='d3.min.js'></script>
+    <script type="module" src="/javascripts/display.js" defer></script>
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Filler</p>
+    <svg width="700" height="400">
+      <g transform="translate(50, 200)"></g>
+    </svg>
   </body>
 </html>
