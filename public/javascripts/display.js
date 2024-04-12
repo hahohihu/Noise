@@ -87,6 +87,11 @@ let spotify = new SpotifyAPI(token);
 		.domain([Math.min(...popularities), Math.max(...popularities)])
 		.range([0, height]);
 
+	let songinfo = d3.select('body')
+		.append('div')
+		.attr('class', 'songinfo')
+		.style('opacity', 0);
+
 	d3.select('svg g')
 		.selectAll('circle')
 		.data(data)
@@ -94,10 +99,17 @@ let spotify = new SpotifyAPI(token);
 		.attr('r', 3)
 		.attr('cx', d => durScale(d.duration))
 		.attr('cy', d => popScale(d.popularity))
-		.on('mouseover', function(d) {
-			d3.select(this).style("fill", "red");
+		.on('mouseover', function(e, d) {
+			d3.select(this).transition().duration(100).style("fill", "red");
+			
+			songinfo.html(d.name + " by " + d.artists.map(artist => artist.name).join(", "))
+				.style('left', (e.pageX + 10) + "px")
+				.style('top', (e.pageY - 15) + "px");
+			songinfo.transition().duration(100).style('opacity', 1);
 		}).on("mouseout", function(d) {
-			d3.select(this).style("fill", "black");
+			d3.select(this).transition().duration(200).style("fill", "black");
+
+			songinfo.transition().duration(200).style('opacity', 0);
 		});
 })();
 
