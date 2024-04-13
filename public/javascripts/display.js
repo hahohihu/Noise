@@ -47,6 +47,27 @@ class SpotifyAPI {
 		localStorage.setItem('tracks', JSON.stringify(tracks));
 		return tracks;
 	}
+	
+	async addFeatures(tracks) {
+		let base_url = 'https://api.spotify.com/v1/audio-features?ids=';
+		for (let i = 0; i < tracks.length; i += 100) {
+			let ids = tracks.map(t => t.track.id).slice(i, i + 100);
+			let features = await this.request(base_url + ids.join(','));
+			features = features.audio_features;
+			for (let j = 0; j < features.length; j++) {
+				tracks[i + j].features = features[j];
+			}
+		}
+	}
+
+	async getTracksWithFeaturesCached() {
+		let tracks = await this.getSavedTracksCached();
+		if (tracks.length > 0 && !tracks[0].features) {
+			await this.addFeatures(tracks);
+			localStorage.setItem('tracks', JSON.stringify(tracks));
+		}
+		return tracks;
+	}
 }
 
 let token = getCookie('access_token');
@@ -56,29 +77,34 @@ if (!token) {
 let spotify = new SpotifyAPI(token);
 
 (async () => {
-	let tracks = await spotify.getSavedTracksCached();
+	let tracks = await spotify.getTracksWithFeaturesCached();
 	console.log(tracks);
 
 	let data = tracks.map(t => {
 		return {
 			name: t.track.name,
 			artists: t.track.artists,
+			features: t.features,
 			duration: t.track.duration_ms,
 			popularity: t.track.popularity
 		}
 	});
-	let durations = data.map(t => t.duration);
-	let popularities = data.map(t => t.popularity);
+
+	let getX = track => track.features.energy;
+	let getY = track => track.features.speechiness;
+
+	let xValues = data.map(getX);
+	let yValues = data.map(getY);
 
 	var width = window.innerWidth, height = window.innerHeight;
 	var colorScale = ['orange', 'lightblue', '#B19CD9'];
 
-	let durScale = d3.scaleLinear()
-		.domain([Math.min(...durations), Math.max(...durations)])
+	let xScale = d3.scaleLinear()
+		.domain([Math.min(...xValues), Math.max(...xValues)])
 		.range([0, width - 100])
 
-	let popScale = d3.scaleLinear()
-		.domain([Math.min(...popularities), Math.max(...popularities)])
+	let yScale = d3.scaleLinear()
+		.domain([Math.min(...yValues), Math.max(...yValues)])
 		.range([0, height - 100]);
 
 	let songinfo = d3.select('body')
@@ -95,8 +121,8 @@ let spotify = new SpotifyAPI(token);
 		.data(data)
 		.join('circle')
 		.attr('r', 5)
-		.attr('cx', d => durScale(d.duration))
-		.attr('cy', d => popScale(d.popularity))
+		.attr('cx', d => xScale(getX(d)))
+		.attr('cy', d => yScale(getY(d)))
 		.on('mouseover', function(e, d) {
 			d3.select(this).transition().duration(100).style("fill", "red");
 			
