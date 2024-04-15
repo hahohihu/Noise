@@ -95,8 +95,7 @@ async function render(tracks) {
 
 	d3.select('svg')
 		.attr('width', width)
-		.attr('height', height)
-		.call(responsivefy);
+		.attr('height', height);
 
 	d3.select('svg g')
 		.selectAll('circle')
