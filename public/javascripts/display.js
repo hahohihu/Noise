@@ -70,31 +70,12 @@ class SpotifyAPI {
 	}
 }
 
-let token = getCookie('access_token');
-if (!token) {
-	window.location.replace("/");
-}
-let spotify = new SpotifyAPI(token);
-
-(async () => {
-	let tracks = await spotify.getTracksWithFeaturesCached();
-	console.log(tracks);
-
-	let data = tracks.map(t => {
-		return {
-			name: t.track.name,
-			artists: t.track.artists,
-			features: t.features,
-			duration: t.track.duration_ms,
-			popularity: t.track.popularity
-		}
-	});
-
+async function render(tracks) {
 	let getX = track => track.features.energy;
-	let getY = track => track.features.speechiness;
+	let getY = track => track.features.acousticness;
 
-	let xValues = data.map(getX);
-	let yValues = data.map(getY);
+	let xValues = tracks.map(getX);
+	let yValues = tracks.map(getY);
 
 	var width = window.innerWidth, height = window.innerHeight;
 	var colorScale = ['orange', 'lightblue', '#B19CD9'];
@@ -118,7 +99,7 @@ let spotify = new SpotifyAPI(token);
 
 	d3.select('svg g')
 		.selectAll('circle')
-		.data(data)
+		.data(tracks)
 		.join('circle')
 		.attr('r', 5)
 		.attr('cx', d => xScale(getX(d)))
@@ -135,6 +116,29 @@ let spotify = new SpotifyAPI(token);
 
 			songinfo.transition().duration(200).style('opacity', 0);
 		});
+}
+
+let token = getCookie('access_token');
+if (!token) {
+	window.location.replace("/");
+}
+let spotify = new SpotifyAPI(token);
+
+(async () => {
+	let tracks = await spotify.getTracksWithFeaturesCached();
+	console.log(tracks);
+
+	let data = tracks.map(t => {
+		return {
+			name: t.track.name,
+			artists: t.track.artists,
+			features: t.features,
+			duration: t.track.duration_ms,
+			popularity: t.track.popularity
+		}
+	});
+
+	render(data);
 })();
 
 
