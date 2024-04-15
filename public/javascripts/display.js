@@ -60,11 +60,11 @@ async function render(tracks) {
 			songinfo.html(d.name + " by " + d.artists.map(artist => artist.name).join(", "))
 				.style('left', (e.pageX + 10) + "px")
 				.style('top', (e.pageY - 15) + "px");
-			songinfo.transition().duration(100).style('display', 'block');
+			songinfo.style('display', 'block');
 		}).on("mouseout", function(d) {
 			d3.select(this).transition().duration(200).style("fill", "black");
 
-			songinfo.transition().duration(200).style('display', 'none');
+			songinfo.style('display', 'none');
 		});
 }
 
