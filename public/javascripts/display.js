@@ -1,4 +1,5 @@
 import { SpotifyAPI } from "./spotify.js";
+import { FEATURES } from "./features.js";
 
 function getCookie(name) {
 	const value = `; ${document.cookie}`;
@@ -6,9 +7,23 @@ function getCookie(name) {
 	if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
+let xAxis = document.getElementById("x");
+let yAxis = document.getElementById("y");
+
+for (let feature of Object.keys(FEATURES)) {
+	let opt = document.createElement('option');
+	opt.value = feature;
+	opt.innerHTML = feature;
+	xAxis.appendChild(opt.cloneNode(true));
+	yAxis.appendChild(opt);
+}
+
+xAxis.value = localStorage.getItem("xFeature") || "energy";
+yAxis.value = localStorage.getItem("yFeature") || "acousticness";
+
 async function render(tracks) {
-	let getX = track => track.features.energy;
-	let getY = track => track.features.acousticness;
+	let getX = track => FEATURES[xAxis.value].get(track);
+	let getY = track => FEATURES[yAxis.value].get(track);
 
 	let xValues = tracks.map(getX);
 	let yValues = tracks.map(getY);
@@ -76,4 +91,14 @@ let spotify = new SpotifyAPI(token);
 	d3.select(window).on("resize.chart", () => render(data));
 
 	render(data);
+	
+	xAxis.onchange = () => {
+		localStorage.setItem("xFeature", xAxis.value);
+		render(data);
+	};
+
+	yAxis.onchange = () => {
+		localStorage.setItem("yFeature", yAxis.value);
+		render(data);
+	};
 })();
