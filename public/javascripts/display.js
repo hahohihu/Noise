@@ -135,12 +135,9 @@ let spotify = new SpotifyAPI(token);
 			duration: t.track.duration_ms,
 			popularity: t.track.popularity
 		}
-	});
-
+	});	
+	
 	d3.select(window).on("resize.chart", () => render(data));
 
 	render(data);
 })();
-
-
-
