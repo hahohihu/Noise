@@ -1,7 +1,6 @@
 class Feature {
-	constructor(name, domain = undefined) {
+	constructor(name) {
 		this.name = name;
-		this.domain = domain;
 	}
 
 	get(track) {
@@ -12,12 +11,12 @@ class Feature {
 function define_features() {
     let features = {};
     for (let feature of [
-        new Feature("energy", [0, 1]),
-        new Feature("acousticness", [0, 1]),
-        new Feature("danceability", [0, 1]),
-        new Feature("liveness", [0, 1]),
-        new Feature("instrumentalness", [0, 1]),
-        new Feature("speechiness", [0, 1]),
+        new Feature("energy"),
+        new Feature("acousticness"),
+        new Feature("danceability"),
+        new Feature("liveness"),
+        new Feature("instrumentalness"),
+        new Feature("speechiness"),
         new Feature("loudness"),
         new Feature("duration_ms"),
         new Feature("tempo")
