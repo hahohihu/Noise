@@ -53,7 +53,7 @@ async function render(tracks) {
 		.join('circle')
 		.attr('r', 5)
 		.attr('cx', d => xScale(getX(d)))
-		.attr('cy', d => yScale(getY(d)))
+		.attr('cy', d => yScale.range()[1] - yScale(getY(d)))
 		.on('mouseover', function(e, d) {
 			d3.select(this).transition().duration(100).style("fill", "red");
 			
