@@ -13,5 +13,33 @@
 body {
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    display: grid;
+    grid-template-columns: min-content auto;
+    grid-template-rows: min-content auto;
+    grid-template-areas:
+        ". x"
+        "y chart";
+}
+
+.axis {
+    border: none;
+    justify-self: center;
+}
+
+#x {
+    grid-area: x;
+}
+
+div:has(#y) {
+    grid-area: y;
+    justify-self: center;
+    align-self: center;
+}
+
+#y {
+    transform: rotate(270deg);
+}
+
+svg {
+    grid-area: chart;
 }

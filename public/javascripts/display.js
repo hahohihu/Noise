@@ -77,16 +77,15 @@ async function render(tracks) {
 	let xValues = tracks.map(getX);
 	let yValues = tracks.map(getY);
 
-	var width = window.innerWidth, height = window.innerHeight;
-	var colorScale = ['orange', 'lightblue', '#B19CD9'];
+	var width = window.innerWidth - 50, height = window.innerHeight - 50;
 
 	let xScale = d3.scaleLinear()
 		.domain([Math.min(...xValues), Math.max(...xValues)])
-		.range([0, width - 100])
+		.range([0, width - 75])
 
 	let yScale = d3.scaleLinear()
 		.domain([Math.min(...yValues), Math.max(...yValues)])
-		.range([0, height - 100]);
+		.range([0, height - 75]);
 
 	let songinfo = d3.select('body')
 		.append('div')
