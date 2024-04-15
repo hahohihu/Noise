@@ -24,7 +24,7 @@ yAxis.value = localStorage.getItem("yFeature") || "acousticness";
 let songinfo = d3.select('body')
 	.append('div')
 	.attr('class', 'songinfo')
-	.style('opacity', 0);
+	.style('display', 'none');
 
 async function render(tracks) {
 	let getX = track => FEATURES[xAxis.value].get(track);
@@ -61,7 +61,7 @@ async function render(tracks) {
 				.style('left', (e.pageX + 10) + "px")
 				.style('top', (e.pageY - 15) + "px");
 			songinfo.transition().duration(100).style('display', 'block');
-		}).on("mouseout", function(e) {
+		}).on("mouseout", function(d) {
 			d3.select(this).transition().duration(200).style("fill", "black");
 
 			songinfo.transition().duration(200).style('display', 'none');
