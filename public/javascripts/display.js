@@ -21,6 +21,11 @@ for (let feature of Object.keys(FEATURES)) {
 xAxis.value = localStorage.getItem("xFeature") || "energy";
 yAxis.value = localStorage.getItem("yFeature") || "acousticness";
 
+let songinfo = d3.select('body')
+	.append('div')
+	.attr('class', 'songinfo')
+	.style('opacity', 0);
+
 async function render(tracks) {
 	let getX = track => FEATURES[xAxis.value].get(track);
 	let getY = track => FEATURES[yAxis.value].get(track);
@@ -37,11 +42,6 @@ async function render(tracks) {
 	let yScale = d3.scaleLinear()
 		.domain([Math.min(...yValues), Math.max(...yValues)])
 		.range([0, height - 75]);
-
-	let songinfo = d3.select('body')
-		.append('div')
-		.attr('class', 'songinfo')
-		.style('opacity', 0);
 
 	d3.select('svg')
 		.attr('width', width)
@@ -60,11 +60,11 @@ async function render(tracks) {
 			songinfo.html(d.name + " by " + d.artists.map(artist => artist.name).join(", "))
 				.style('left', (e.pageX + 10) + "px")
 				.style('top', (e.pageY - 15) + "px");
-			songinfo.transition().duration(100).style('opacity', 1);
-		}).on("mouseout", function(d) {
+			songinfo.transition().duration(100).style('display', 'block');
+		}).on("mouseout", function(e) {
 			d3.select(this).transition().duration(200).style("fill", "black");
 
-			songinfo.transition().duration(200).style('opacity', 0);
+			songinfo.transition().duration(200).style('display', 'none');
 		});
 }
 
@@ -76,7 +76,6 @@ let spotify = new SpotifyAPI(token);
 
 (async () => {
 	let tracks = await spotify.getTracksWithFeaturesCached();
-	console.log(tracks);
 
 	let data = tracks.map(t => {
 		return {
